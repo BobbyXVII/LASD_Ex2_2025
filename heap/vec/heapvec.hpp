@@ -14,7 +14,7 @@ namespace lasd {
 
 template <typename Data>
 class HeapVec : virtual public Heap<Data>,
-                /* virtual */ public Vector<Data> {
+                virtual public SortableVector<Data> {
 
 private:
 
@@ -22,12 +22,8 @@ private:
 
 protected:
 
-  // using Container::???;
   using Container::size;
-
-  // Auxiliary functions
-  void HeapifyUp(ulong);
-  void HeapifyDown(ulong);
+  using SortableVector<Data>::elements;
 
 public:
 
@@ -98,6 +94,11 @@ public:
 protected:
 
   // Auxiliary functions, if necessary!
+  void HeapifyUp(ulong);
+  void HeapifyDown(ulong);
+  ulong Parent(ulong) const noexcept;
+  ulong LeftChild(ulong) const noexcept;
+  ulong RightChild(ulong) const noexcept;
 
 };
 

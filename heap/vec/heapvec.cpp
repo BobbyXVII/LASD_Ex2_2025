@@ -6,25 +6,25 @@ namespace lasd {
 
 template <typename Data>
 HeapVec<Data>::HeapVec(const TraversableContainer<Data>& container)
-  : Vector<Data>(container) {
+  : SortableVector<Data>(container) {
   Heapify();
 }
 
 template <typename Data>
 HeapVec<Data>::HeapVec(MappableContainer<Data>&& container) noexcept
-  : Vector<Data>(std::move(container)) {
+  : SortableVector<Data>(std::move(container)) {
   Heapify();
 }
 
 // Copy constructor
 template <typename Data>
 HeapVec<Data>::HeapVec(const HeapVec<Data>& other)
-  : Vector<Data>(other) { }
+  : SortableVector<Data>(other) { }
 
 // Move constructor
 template <typename Data>
 HeapVec<Data>::HeapVec(HeapVec<Data>&& other) noexcept
-  : Vector<Data>(std::move(other)) { }
+  : SortableVector<Data>(std::move(other)) { }
 
 /* ************************************************************************** */
 
@@ -32,19 +32,89 @@ HeapVec<Data>::HeapVec(HeapVec<Data>&& other) noexcept
 
 template <typename Data>
 HeapVec<Data>& HeapVec<Data>::operator=(const HeapVec<Data>& other) {
-  Vector<Data>::operator=(other);
+  SortableVector<Data>::operator=(other);
   return *this;
 }
 
 template <typename Data>
 HeapVec<Data>& HeapVec<Data>::operator=(HeapVec<Data>&& other) noexcept {
-  Vector<Data>::operator=(std::move(other));
+  SortableVector<Data>::operator=(std::move(other));
   return *this;
 }
 
 /* ************************************************************************** */
 
-// Specific member functions
+// Comparison operators
+
+template <typename Data>
+bool HeapVec<Data>::operator==(const HeapVec<Data>& other) const noexcept {
+  return SortableVector<Data>::operator==(other);
+}
+
+template <typename Data>
+bool HeapVec<Data>::operator!=(const HeapVec<Data>& other) const noexcept {
+  return !(*this == other);
+}
+
+/* ************************************************************************** */
+
+// Specific member functions (inherited from Heap)
+
+template <typename Data>
+bool HeapVec<Data>::IsHeap() const noexcept {
+  if (Empty()) {
+    return true;
+  }
+  
+  for (ulong i = 0; i < size / 2; ++i) {
+    ulong left = LeftChild(i);
+    ulong right = RightChild(i);
+    
+    if (left < size && elements[i] < elements[left]) {
+      return false;
+    }
+    if (right < size && elements[i] < elements[right]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename Data>
+void HeapVec<Data>::Heapify() noexcept {
+  if (size <= 1) return;
+  
+  // Start from the last parent node and heapify down
+  for (long i = (size / 2) - 1; i >= 0; --i) {
+    HeapifyDown(i);
+  }
+}
+
+/* ************************************************************************** */
+
+// Specific member function (inherited from SortableLinearContainer)
+
+template <typename Data>
+void HeapVec<Data>::Sort() noexcept {
+  // HeapSort algorithm
+  ulong originalSize = size;
+  
+  // Build max heap
+  Heapify();
+  
+  // Extract elements one by one
+  for (ulong i = size - 1; i > 0; --i) {
+    std::swap(elements[0], elements[i]);
+    size--; // Temporarily reduce size
+    HeapifyDown(0);
+  }
+  
+  size = originalSize; // Restore original size
+}
+
+/* ************************************************************************** */
+
+// Specific member functions for Heap operations
 
 template <typename Data>
 const Data& HeapVec<Data>::Top() const {
@@ -90,19 +160,9 @@ void HeapVec<Data>::Insert(Data&& value) {
 // Auxiliary functions
 
 template <typename Data>
-void HeapVec<Data>::Heapify() {
-  if (size <= 1) return;
-  
-  // Start from the last parent node and heapify down
-  for (long i = (size / 2) - 1; i >= 0; --i) {
-    HeapifyDown(i);
-  }
-}
-
-template <typename Data>
 void HeapVec<Data>::HeapifyUp(ulong index) {
   while (index > 0) {
-    ulong parent = (index - 1) / 2;
+    ulong parent = Parent(index);
     if (elements[index] > elements[parent]) {
       std::swap(elements[index], elements[parent]);
       index = parent;
@@ -116,8 +176,8 @@ template <typename Data>
 void HeapVec<Data>::HeapifyDown(ulong index) {
   while (true) {
     ulong largest = index;
-    ulong left = 2 * index + 1;
-    ulong right = 2 * index + 2;
+    ulong left = LeftChild(index);
+    ulong right = RightChild(index);
 
     // Find the largest among parent, left child, and right child
     if (left < size && elements[left] > elements[largest]) {
@@ -135,6 +195,21 @@ void HeapVec<Data>::HeapifyDown(ulong index) {
       break;
     }
   }
+}
+
+template <typename Data>
+ulong HeapVec<Data>::Parent(ulong index) const noexcept {
+  return (index - 1) / 2;
+}
+
+template <typename Data>
+ulong HeapVec<Data>::LeftChild(ulong index) const noexcept {
+  return 2 * index + 1;
+}
+
+template <typename Data>
+ulong HeapVec<Data>::RightChild(ulong index) const noexcept {
+  return 2 * index + 2;
 }
 
 /* ************************************************************************** */
