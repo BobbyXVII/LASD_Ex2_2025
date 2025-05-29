@@ -60,9 +60,11 @@ bool HeapVec<Data>::operator!=(const HeapVec<Data>& other) const noexcept {
 
 // Specific member functions (inherited from Heap)
 
+
+// IsHeap checks if the current vector satisfies the heap property.
 template <typename Data>
 bool HeapVec<Data>::IsHeap() const noexcept {
-  if (Empty()) {
+  if (this->Empty()) {
     return true;
   }
   
@@ -79,6 +81,8 @@ bool HeapVec<Data>::IsHeap() const noexcept {
   }
   return true;
 }
+
+// Heapify builds a max heap from the current vector.
 
 template <typename Data>
 void HeapVec<Data>::Heapify() noexcept {
@@ -118,7 +122,7 @@ void HeapVec<Data>::Sort() noexcept {
 
 template <typename Data>
 const Data& HeapVec<Data>::Top() const {
-  if (Empty()) {
+  if (this->Empty()) {
     throw std::length_error("Top: Empty heap");
   }
   return elements[0];
@@ -126,7 +130,7 @@ const Data& HeapVec<Data>::Top() const {
 
 template <typename Data>
 Data HeapVec<Data>::TopNRemove() {
-  if (Empty()) {
+  if (this->Empty()) {
     throw std::length_error("TopNRemove: Empty heap");
   }
 
@@ -134,7 +138,7 @@ Data HeapVec<Data>::TopNRemove() {
   elements[0] = std::move(elements[size - 1]);
   Resize(size - 1);
 
-  if (!Empty()) {
+  if (!this->Empty()) {
     HeapifyDown(0);
   }
 
@@ -159,6 +163,7 @@ void HeapVec<Data>::Insert(Data&& value) {
 
 // Auxiliary functions
 
+// HeapifyUp restores the heap property by moving the element at index up the tree.
 template <typename Data>
 void HeapVec<Data>::HeapifyUp(ulong index) {
   while (index > 0) {
@@ -172,6 +177,7 @@ void HeapVec<Data>::HeapifyUp(ulong index) {
   }
 }
 
+// HeapifyDown restores the heap property by moving the element at index down the tree.
 template <typename Data>
 void HeapVec<Data>::HeapifyDown(ulong index) {
   while (true) {
