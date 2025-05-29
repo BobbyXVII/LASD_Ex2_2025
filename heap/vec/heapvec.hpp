@@ -1,4 +1,3 @@
-
 #ifndef HEAPVEC_HPP
 #define HEAPVEC_HPP
 
@@ -24,9 +23,11 @@ private:
 protected:
 
   // using Container::???;
-  using Container::Size;
+  using Container::size;
 
-  // ...
+  // Auxiliary functions
+  void HeapifyUp(ulong);
+  void HeapifyDown(ulong);
 
 public:
 
@@ -41,7 +42,7 @@ public:
   HeapVec(const TraversableContainer<Data>&);
   
   // A heap obtained from a MappableContainer
-  HeapVec(const MappableContainer<Data>&);
+  HeapVec(MappableContainer<Data>&&) noexcept;
 
   /* ************************************************************************ */
 
@@ -59,31 +60,40 @@ public:
   /* ************************************************************************ */
 
   // Copy assignment
-  inline HeapVec<Data>& operator=(const HeapVec<Data>&) = default;
+  HeapVec<Data>& operator=(const HeapVec<Data>&);
 
   // Move assignment
-  inline HeapVec<Data>& operator=(HeapVec<Data>&&) noexcept = default;
+  HeapVec<Data>& operator=(HeapVec<Data>&&) noexcept;
 
   /* ************************************************************************ */
 
   // Comparison operators
-  inline bool operator==(const HeapVec<Data>&) const noexcept; // Comparison of abstract types is not possible.
-  inline bool operator!=(const HeapVec<Data>&) const noexcept; // Comparison of abstract types is not possible.
+  bool operator==(const HeapVec<Data>&) const noexcept;
+  bool operator!=(const HeapVec<Data>&) const noexcept;
 
   /* ************************************************************************ */
 
   // Specific member functions (inherited from Heap)
 
   // Override Heap member
-  IsHeap() override noexcept; // (must throw std::length_error when empty)
+  bool IsHeap() const noexcept override; // (must throw std::length_error when empty)
 
   // Override Heap member
-  Heapify() override noexcept; // (must throw std::length_error when empty)
+  void Heapify() noexcept override; // (must throw std::length_error when empty)
 
   /* ************************************************************************ */
 
   // Specific member function (inherited from SortableLinearContainer)
-  inline void Sort() noexcept override; // Override SortableLinearContainer member
+  void Sort() noexcept override; // Override SortableLinearContainer member
+
+  /* ************************************************************************ */
+
+  // Specific member functions for Heap operations
+
+  const Data& Top() const; // (must throw std::length_error when empty)
+  Data TopNRemove(); // (must throw std::length_error when empty)
+  void Insert(const Data&);
+  void Insert(Data&&);
 
 protected:
 
