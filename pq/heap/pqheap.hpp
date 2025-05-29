@@ -14,9 +14,9 @@ namespace lasd {
 /* ************************************************************************** */
 
 template <typename Data>
-class PQHeap {
-  // Must extend PQ<Data>,
-  // Could extend HeapVec<Data>
+class PQHeap : virtual public PQ<Data>,
+                virtual public HeapVec<Data> {
+
 
 private:
 
@@ -24,59 +24,59 @@ private:
 
 protected:
 
-  // using Container::???;
+  using Container::Size;
 
   // ...
 
 public:
 
   // Default constructor
-  // PQHeap() specifiers;
+  PQHeap() = default; // Default constructor, no specifiers needed
 
   /* ************************************************************************ */
 
   // Specific constructors
-  // PQHeap(argument) specifiers; // A priority queue obtained from a TraversableContainer
-  // PQHeap(argument) specifiers; // A priority queue obtained from a MappableContainer
+  PQHeap(const TraversableContainer<Data>&); // A priority queue obtained from a TraversableContainer
+  PQHeap(const MappableContainer<Data>&); // A priority queue obtained from a MappableContainer
 
   /* ************************************************************************ */
 
   // Copy constructor
-  // PQHeap(argument) specifiers;
+  PQHeap(const PQHeap<Data>&);
 
   // Move constructor
-  // PQHeap(argument) specifiers;
+  PQHeap(PQHeap<Data>&&) noexcept;
+
 
   /* ************************************************************************ */
 
   // Destructor
-  // ~PQHeap() specifiers;
+  virtual ~PQHeap() = default;
 
   /* ************************************************************************ */
 
   // Copy assignment
-  // type operator=(argument) specifiers;
+  inline PQHeap<Data>& operator=(const PQHeap<Data>&) = default;
 
   // Move assignment
-  // type operator=(argument) specifiers;
+  inline PQHeap<Data>& operator=(PQHeap<Data>&&) noexcept = default;
 
   /* ************************************************************************ */
 
   // Specific member functions (inherited from PQ)
 
-  // type Tip(argument) specifiers; // Override PQ member (must throw std::length_error when empty)
-  // type RemoveTip(argument) specifiers; // Override PQ member (must throw std::length_error when empty)
-  // type TipNRemove(argument) specifiers; // Override PQ member (must throw std::length_error when empty)
+  Tip() const noexcept; // Override PQ member (must throw std::length_error when empty)
+  RemoveTip() noexcept; // Override PQ member (must throw std::length_error when empty)
+  TipNRemove() noexcept; // Override PQ member (must throw std::length_error when empty)
 
-  // type Insert(argument) specifiers; // Override PQ member (Copy of the value)
-  // type Insert(argument) specifiers; // Override PQ member (Move of the value)
 
-  // type Change(argument) specifiers; // Override PQ member (Copy of the value)
-  // type Change(argument) specifiers; // Override PQ member (Move of the value)
+  Insert(const Data&); // Override PQ member (Copy of the value)
+  Insert(Data&&); // Override PQ member (Move of the value)
+
+  Change(const Data&); // Override PQ member (Copy of the value)
+  Change(Data&&); // Override PQ member (Move of the value)
 
 protected:
-
-  // Auxiliary functions, if necessary!
 
 };
 

@@ -13,9 +13,8 @@ namespace lasd {
 /* ************************************************************************** */
 
 template <typename Data>
-class PQ {
-  // Must extend LinearContainer<Data>,
-  //             ClearableContainer
+class PQ : virtual public LinearContainer<Data>,
+             virtual public ClearableContainer {
 
 private:
 
@@ -24,29 +23,31 @@ protected:
 public:
 
   // Destructor
-  // ~PQ() specifiers
+  virtual ~PQ() = default;
 
   /* ************************************************************************ */
 
   // Copy assignment
-  // type operator=(argument); // Copy assignment of abstract types is not possible.
+  inline PQ & operator=(const PQ &) = delete; // Copy assignment of abstract types is not possible.
 
   // Move assignment
-  // type operator=(argument); // Move assignment of abstract types is not possible.
+  inline PQ & operator=(PQ &&) noexcept = delete; // Move assignment of abstract types is not possible.
 
   /* ************************************************************************ */
 
   // Specific member functions
 
-  // type Tip(argument) specifiers; // (concrete function must throw std::length_error when empty)
-  // type RemoveTip(argument) specifiers; // (concrete function must throw std::length_error when empty)
-  // type TipNRemove(argument) specifiers; // (concrete function must throw std::length_error when empty)
 
-  // type Insert(argument) specifiers; // Copy of the value
-  // type Insert(argument) specifiers; // Move of the value
+  Tip() const noexcept; // (concrete function must throw std::length_error when empty)
+  RemoveTip() noexcept; // (concrete function must throw std::length_error when empty)
+  TipNRemove() noexcept; // (concrete function must throw std::length_error when empty)
 
-  // type Change(argument) specifiers; // Copy of the value
-  // type Change(argument) specifiers; // Copy of the value
+
+  Insert(const Data &); // Copy of the value
+  Insert(Data &&); // Move of the value
+
+  Change(const Data &); // Copy of the value
+  Change(Data &&); // Move of the value
 
 };
 
