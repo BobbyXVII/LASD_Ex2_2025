@@ -14,7 +14,7 @@ namespace lasd {
 
 template <typename Data>
 class HeapVec : virtual public Heap<Data>,
-                public SortableVector<Data> {
+                public Vector<Data> {
 
 private:
 
@@ -22,8 +22,8 @@ private:
 
 protected:
 
-  using Container::size;
-  using SortableVector<Data>::elements;
+  using Vector<Data>::size;
+  using Vector<Data>::elements;
 
 public:
 
@@ -35,18 +35,18 @@ public:
   // Specific constructors
   
   // A heap obtained from a TraversableContainer
-  HeapVec(const TraversableContainer<Data>&);
+  HeapVec(const TraversableContainer<Data>& con);
   
   // A heap obtained from a MappableContainer
-  HeapVec(MappableContainer<Data>&&) noexcept;
+  HeapVec(MappableContainer<Data>&& con);
 
   /* ************************************************************************ */
 
   // Copy constructor
-  HeapVec(const HeapVec<Data>&);
+  HeapVec(const HeapVec& other);
 
   // Move constructor
-  HeapVec(HeapVec<Data>&&) noexcept;
+  HeapVec(HeapVec&& other) noexcept;
 
   /* ************************************************************************ */
 
@@ -56,16 +56,16 @@ public:
   /* ************************************************************************ */
 
   // Copy assignment
-  HeapVec<Data>& operator=(const HeapVec<Data>&);
+  HeapVec& operator=(const HeapVec& other);
 
   // Move assignment
-  HeapVec<Data>& operator=(HeapVec<Data>&&) noexcept;
+  HeapVec& operator=(HeapVec&& other) noexcept;
 
   /* ************************************************************************ */
 
   // Comparison operators
-  bool operator==(const HeapVec<Data>&) const noexcept;
-  bool operator!=(const HeapVec<Data>&) const noexcept;
+  bool operator==(const HeapVec& other) const noexcept;
+  bool operator!=(const HeapVec& other) const noexcept;
 
   /* ************************************************************************ */
 
@@ -75,30 +75,32 @@ public:
   bool IsHeap() const noexcept override; // (must throw std::length_error when empty)
 
   // Override Heap member
-  void Heapify() noexcept override; // (must throw std::length_error when empty)
+  void Heapify() override;
 
   /* ************************************************************************ */
 
   // Specific member function (inherited from SortableLinearContainer)
-  void Sort() noexcept override; // Override SortableLinearContainer member
+  void Sort() override; // Override SortableLinearContainer member
 
   /* ************************************************************************ */
 
-  // Specific member functions for Heap operations
-
-  const Data& Top() const; // (must throw std::length_error when empty)
-  Data TopNRemove(); // (must throw std::length_error when empty)
-  void Insert(const Data&);
-  void Insert(Data&&);
+  void Clear() override; // Override ClearableContainer member
+  
 
 protected:
-
+  void Swap(ulong, ulong); // Swap elements at two indices
   // Auxiliary functions, if necessary!
   void HeapifyUp(ulong);
   void HeapifyDown(ulong);
-  ulong Parent(ulong) const noexcept;
-  ulong LeftChild(ulong) const noexcept;
-  ulong RightChild(ulong) const noexcept;
+  void BuildHeap();
+
+  ulong Parent(ulong) const;
+  ulong LeftChild(ulong) const;
+  ulong RightChild(ulong) const;
+
+  bool HasParent(ulong) const noexcept;
+  bool HasLeftChild(ulong) const noexcept;
+  bool HasRightChild(ulong) const noexcept;
 
 };
 
