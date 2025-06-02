@@ -12,8 +12,8 @@ namespace lasd {
 /* ************************************************************************** */
 
 template <typename Data>
-class Heap : virtual public SortableLinearContainer<Data>,
-            virtual public ClearableContainer {
+class Heap : virtual public SortableLinearContainer<Data>
+            , virtual public ClearableContainer {
 
 private:
 

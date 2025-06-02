@@ -14,8 +14,7 @@ namespace lasd {
 /* ************************************************************************** */
 
 template <typename Data>
-class PQHeap : virtual public PQ<Data>,
-                virtual public HeapVec<Data> {
+class PQHeap : virtual public PQ<Data>, public HeapVec<Data> {
 
 
 private:
@@ -24,7 +23,8 @@ private:
 
 protected:
 
-  using Container::Size;
+  using HeapVec<Data>::size;
+  using HeapVec<Data>::elements;
 
   // ...
 
@@ -36,16 +36,16 @@ public:
   /* ************************************************************************ */
 
   // Specific constructors
-  PQHeap(const TraversableContainer<Data>&); // A priority queue obtained from a TraversableContainer
-  PQHeap(const MappableContainer<Data>&); // A priority queue obtained from a MappableContainer
+  PQHeap(const TraversableContainer<Data>& con); // A priority queue obtained from a TraversableContainer
+  PQHeap(MappableContainer<Data>&& con); // A priority queue obtained from a MappableContainer
 
   /* ************************************************************************ */
 
   // Copy constructor
-  PQHeap(const PQHeap<Data>&);
+  PQHeap(const PQHeap& other);
 
   // Move constructor
-  PQHeap(PQHeap<Data>&&) noexcept;
+  PQHeap(PQHeap&& other) noexcept;
 
 
   /* ************************************************************************ */
@@ -56,25 +56,31 @@ public:
   /* ************************************************************************ */
 
   // Copy assignment
-  inline PQHeap<Data>& operator=(const PQHeap<Data>&) = default;
+  PQHeap& operator=(const PQHeap& other);
 
   // Move assignment
-  inline PQHeap<Data>& operator=(PQHeap<Data>&&) noexcept = default;
+  PQHeap& operator=(PQHeap&& other) noexcept;
 
   /* ************************************************************************ */
 
   // Specific member functions (inherited from PQ)
 
-  Tip() const noexcept; // Override PQ member (must throw std::length_error when empty)
-  RemoveTip() noexcept; // Override PQ member (must throw std::length_error when empty)
-  TipNRemove() noexcept; // Override PQ member (must throw std::length_error when empty)
+  const Data& Tip() const override;
+  void RemoveTip() override;
+  Data TipNRemove() override;
 
 
-  Insert(const Data&); // Override PQ member (Copy of the value)
-  Insert(Data&&); // Override PQ member (Move of the value)
+  void Insert(const Data& value) override; //(Copy of the value)
+  void Insert(Data&& value) override; // (Move of the value)
 
-  Change(const Data&); // Override PQ member (Copy of the value)
-  Change(Data&&); // Override PQ member (Move of the value)
+  void Change(ulong index, const Data& value) override; //(Copy of the value)
+  void Change(ulong index, Data&& value) override; //(Move of the value)
+
+  void Clear() override;
+
+  void HeapifyUp(ulong index);
+
+
 
 protected:
 
