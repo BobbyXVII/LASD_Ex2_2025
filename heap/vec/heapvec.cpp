@@ -72,34 +72,34 @@ void HeapVec<Data>::Swap(ulong index1, ulong index2) {
 }
 
 template <typename Data>
-HeapVec<Data>::HeapVec(const TraversableContainer<Data>& con) : Heap<Data>(), Vector<Data>(con) {
+HeapVec<Data>::HeapVec(const TraversableContainer<Data>& con) : Heap<Data>(), SortableVector<Data>(con) {
   BuildHeap();
 }
 
 template <typename Data>
-HeapVec<Data>::HeapVec(MappableContainer<Data>&& con) : Heap<Data>(), Vector<Data>(std::move(con)) {
+HeapVec<Data>::HeapVec(MappableContainer<Data>&& con) : Heap<Data>(), SortableVector<Data>(std::move(con)) {
   BuildHeap();
 }
 
 template <typename Data>
-HeapVec<Data>::HeapVec(const HeapVec& other) : Heap<Data>(), Vector<Data>(other) {
+HeapVec<Data>::HeapVec(const HeapVec& other) : Heap<Data>(), SortableVector<Data>(other) {
   BuildHeap();
 }
 
 template <typename Data>
-HeapVec<Data>::HeapVec(HeapVec&& other) noexcept : Heap<Data>(), Vector<Data>(std::move(other)) {
+HeapVec<Data>::HeapVec(HeapVec&& other) noexcept : Heap<Data>(), SortableVector<Data>(std::move(other)) {
   BuildHeap();
 }
 
 template <typename Data>
 HeapVec<Data>& HeapVec<Data>::operator=(const HeapVec& other) {
-  Vector<Data>::operator=(other);
+  SortableVector<Data>::operator=(other);
   return *this;
 }
 
 template <typename Data>
 HeapVec<Data>& HeapVec<Data>::operator=(HeapVec&& other) noexcept {
-  Vector<Data>::operator=(std::move(other));
+  SortableVector<Data>::operator=(std::move(other));
   return *this;
 }
 
@@ -161,7 +161,7 @@ void HeapVec<Data>::Sort() noexcept {
 
 template <typename Data>
 void HeapVec<Data>::Clear() {
-  Vector<Data>::Clear();
+  SortableVector<Data>::Clear();
 }
 
 template <typename Data>
@@ -191,14 +191,14 @@ Data HeapVec<Data>::TopNRemove() {
 
 template <typename Data>
 void HeapVec<Data>::Insert(const Data& value) {
-  Vector<Data>::Resize(this->size + 1);
+  SortableVector<Data>::Resize(this->size + 1);
   this->elements[this->size - 1] = value;
   HeapifyUp(this->size - 1);
 }
 
 template <typename Data>
 void HeapVec<Data>::Insert(Data&& value) {
-  Vector<Data>::Resize(this->size + 1);
+  SortableVector<Data>::Resize(this->size + 1);
   this->elements[this->size - 1] = std::move(value);
   HeapifyUp(this->size - 1);
 }

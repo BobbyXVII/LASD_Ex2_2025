@@ -2,6 +2,7 @@
 #ifndef LIST_HPP
 #define LIST_HPP
 
+/* ************************************************************************** */
 
 #include "../container/linear.hpp"
 #include "../container/mappable.hpp"
@@ -61,6 +62,10 @@ protected:
 
     /* ********************************************************************** */
 
+    // Specific member functions
+
+    // ...
+
   };
 
   Node *head{nullptr};
@@ -108,17 +113,17 @@ public:
 
   // Specific member functions
 
-  void InsertAtFront(const Data &); // Copy of the value
+  void InsertAtFront(const Data &);
 
-  void InsertAtFront(Data &&);  // Move of the value
+  void InsertAtFront(Data &&);
 
-  void RemoveFromFront(); // (must throw std::length_error when empty)
+  void RemoveFromFront();
 
-  Data FrontNRemove(); // (must throw std::length_error when empty)
+  Data FrontNRemove();
 
-  void InsertAtBack(const Data &); // Copy of the value
+  void InsertAtBack(const Data &);
 
-  void InsertAtBack(Data &&);  // Move of the value
+  void InsertAtBack(Data &&);
 
   /* ************************************************************************ */
 
@@ -142,19 +147,19 @@ public:
 
   using typename MappableContainer<Data>::MapFun;
 
-  inline void Map(MapFun) override; // Override MappableContainer member
+  inline void Map(MapFun) override;
 
   /* ************************************************************************ */
 
   // Specific member function (inherited from PreOrderMappableContainer)
 
-  inline void PreOrderMap(MapFun) override; // Override PreOrderMappableContainer member
+  inline void PreOrderMap(MapFun) override;
 
   /* ************************************************************************ */
 
   // Specific member function (inherited from PostOrderMappableContainer)
 
-  inline void PostOrderMap(MapFun) override; // Override PostOrderMappableContainer member
+  inline void PostOrderMap(MapFun) override;
 
   /* ************************************************************************ */
 
@@ -162,25 +167,25 @@ public:
 
   using typename TraversableContainer<Data>::TraverseFun;
 
-  inline void Traverse(TraverseFun) const override; // Override TraversableContainer member
+  inline void Traverse(TraverseFun) const override;
 
   /* ************************************************************************ */
 
   // Specific member function (inherited from PreOrderTraversableContainer)
 
-  inline void PreOrderTraverse(TraverseFun) const override; // Override PreOrderTraversableContainer member
+  inline void PreOrderTraverse(TraverseFun) const override;
 
   /* ************************************************************************ */
 
   // Specific member function (inherited from PostOrderTraversableContainer)
 
-  inline void PostOrderTraverse(TraverseFun) const override; // Override PostOrderTraversableContainer member
+  inline void PostOrderTraverse(TraverseFun) const override;
 
   /* ************************************************************************ */
 
   // Specific member function (inherited from ClearableContainer)
 
-  inline void Clear() override; // Override ClearableContainer member
+  inline void Clear() override;
 
   using TestableContainer<Data>::Exists;
 

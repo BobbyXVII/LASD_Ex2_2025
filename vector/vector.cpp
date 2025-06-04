@@ -1,48 +1,74 @@
 namespace lasd {
 
-/* ******************************* Costruttore con dimensione iniziale ******************************* */
+/* ************************************************************************** */
+/* VECTOR - SPECIFIC CONSTRUCTORS                                              */
+/* ************************************************************************** */
 
-// Costruttore con dimensione iniziale
 template<typename Data>
 Vector<Data>::Vector(const unsigned long newsize) {
     size = newsize;
-    elements = new Data[size]{};
+    if (size > 0) {
+        elements = new Data[size]{};
+    } else {
+        elements = nullptr;
+    }
 }
 
-/* ******************************* Costruttore da TraversableContainer ******************************* */
 template<typename Data>
 Vector<Data>::Vector(const TraversableContainer<Data>& container)
   : Vector(container.Size()) {
-    unsigned long index = 0;
-    container.Traverse(
-        [this, &index](const Data& dat) {
-            elements[index++] = dat;
-        }
-    );
+    try {
+        unsigned long index = 0;
+        container.Traverse(
+            [this, &index](const Data& dat) {
+                elements[index++] = dat;
+            }
+        );
+    } catch (...) {
+        delete[] elements;
+        elements = nullptr;
+        size = 0;
+        throw;
+    }
 }
 
-/* ******************************* Mappable ******************************* */
 template<typename Data>
 Vector<Data>::Vector(MappableContainer<Data>&& container)
   : Vector(container.Size()) {
-    unsigned long index = 0;
-    container.Map(
-        [this, &index](Data& dat) {
-            elements[index++] = std::move(dat);
-        }
-    );
+    try {
+        unsigned long index = 0;
+        container.Map(
+            [this, &index](Data& dat) {
+                elements[index++] = std::move(dat);
+            }
+        );
+    } catch (...) {
+        delete[] elements;
+        elements = nullptr;
+        size = 0;
+        throw;
+    }
 }
 
+/* ************************************************************************** */
+/* VECTOR - COPY AND MOVE CONSTRUCTORS                                         */
+/* ************************************************************************** */
 
-/* ******************************* Copy constructor ******************************* */
+// Copy constructor
 template<typename Data>
 Vector<Data>::Vector(const Vector<Data>& vector)
   : Vector(vector.size) {
-    std::uninitialized_copy(vector.elements, vector.elements + size, elements);
+    try {
+        std::uninitialized_copy(vector.elements, vector.elements + size, elements);
+    } catch (...) {
+        delete[] elements;
+        elements = nullptr;
+        size = 0;
+        throw;
+    }
 }
 
-
-/* ******************************* Move constructor ******************************* */
+// Move constructor
 template<typename Data>
 Vector<Data>::Vector(Vector<Data>&& vector) noexcept {
     std::swap(size, vector.size);
@@ -50,27 +76,29 @@ Vector<Data>::Vector(Vector<Data>&& vector) noexcept {
 }
 
 /* ************************************************************************** */
+/* VECTOR - DESTRUCTOR                                                         */
+/* ************************************************************************** */
 
-
-/* ******************************* Destructor ******************************* */
 template<typename Data>
 Vector<Data>::~Vector() {
     delete[] elements;
 }
 
 /* ************************************************************************** */
+/* VECTOR - ASSIGNMENT OPERATORS                                               */
+/* ************************************************************************** */
 
-
-/* ******************************* Copy assignment ******************************* */
+// Copy assignment
 template<typename Data>
 Vector<Data>& Vector<Data>::operator=(const Vector<Data>& vector) {
-    Vector<Data> temp{vector};
-    std::swap(*this, temp);
+    if (this != &vector) {  // Aggiungi controllo auto-assegnamento
+        Vector<Data> temp{vector};
+        std::swap(*this, temp);
+    }
     return *this;
 }
 
-
-/* ******************************* Move assignment ******************************* */
+// Move assignment
 template<typename Data>
 Vector<Data>& Vector<Data>::operator=(Vector<Data>&& vector) noexcept {
     std::swap(size, vector.size);
@@ -79,9 +107,8 @@ Vector<Data>& Vector<Data>::operator=(Vector<Data>&& vector) noexcept {
 }
 
 /* ************************************************************************** */
-
-
-/* ******************************* Comparison operators ******************************* */
+/* VECTOR - COMPARISON OPERATORS                                               */
+/* ************************************************************************** */
 
 template<typename Data>
 bool Vector<Data>::operator==(const Vector<Data>& vector) const noexcept {
@@ -98,9 +125,8 @@ bool Vector<Data>::operator!=(const Vector<Data>& vector) const noexcept {
 }
 
 /* ************************************************************************** */
-
-
-/* ******************************* Mutable ******************************* */
+/* VECTOR - MUTABLE LINEAR CONTAINER FUNCTIONS                                 */
+/* ************************************************************************** */
 
 template<typename Data>
 Data& Vector<Data>::operator[](const unsigned long index) {
@@ -118,9 +144,8 @@ Data& Vector<Data>::Back() {
 }
 
 /* ************************************************************************** */
-
-
-/* ******************************* Immutable ******************************* */
+/* VECTOR - LINEAR CONTAINER FUNCTIONS                                         */
+/* ************************************************************************** */
 
 template<typename Data>
 const Data& Vector<Data>::operator[](const unsigned long index) const {
@@ -150,25 +175,39 @@ const Data& Vector<Data>::Back() const {
 }
 
 /* ************************************************************************** */
+/* VECTOR - RESIZABLE CONTAINER FUNCTIONS                                      */
+/* ************************************************************************** */
 
-
-/* ******************************* Resize ******************************* */
 template<typename Data>
 void Vector<Data>::Resize(unsigned long newSize) {
     if (newSize != size) {
+        if (newSize == 0) {
+            Clear();
+            return;
+        }
+        
         Data* newElements = new Data[newSize]{};
         unsigned long minSize = (newSize < size) ? newSize : size;
-        for (unsigned long i = 0; i < minSize; ++i) {
-            newElements[i] = std::move(elements[i]);
+        
+        try {
+            for (unsigned long i = 0; i < minSize; ++i) {
+                newElements[i] = std::move_if_noexcept(elements[i]);
+            }
+        } catch (...) {
+            delete[] newElements;
+            throw;
         }
+        
         delete[] elements;
         elements = newElements;
         size = newSize;
     }
 }
 
+/* ************************************************************************** */
+/* VECTOR - CLEARABLE CONTAINER FUNCTIONS                                      */
+/* ************************************************************************** */
 
-/* ******************************* Clear ******************************* */
 template<typename Data>
 void Vector<Data>::Clear() {
     delete[] elements;
@@ -177,17 +216,17 @@ void Vector<Data>::Clear() {
 }
 
 /* ************************************************************************** */
+/* SORTABLE VECTOR - ASSIGNMENT OPERATORS                                      */
+/* ************************************************************************** */
 
-
-/* ******************************* SortableVector copy assignment ******************************* */
+// SortableVector copy assignment
 template<typename Data>
 SortableVector<Data>& SortableVector<Data>::operator=(const SortableVector<Data>& vec) {
     Vector<Data>::operator=(vec);
     return *this;
 }
 
-
-/* ******************************* SortableVector move assignment ******************************* */
+// SortableVector move assignment
 template<typename Data>
 SortableVector<Data>& SortableVector<Data>::operator=(SortableVector<Data>&& vec) noexcept {
     Vector<Data>::operator=(std::move(vec));

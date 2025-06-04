@@ -1,6 +1,8 @@
 namespace lasd {
 
-/* ******************************* DATA ******************************* */
+/* ************************************************************************** */
+/* NODE - CONSTRUCTORS, DESTRUCTOR AND OPERATORS                               */
+/* ************************************************************************** */
 
 // Data copy constructor
 template <typename Data>
@@ -10,25 +12,21 @@ List<Data>::Node::Node(const Data &d) : val(d) {}
 template <typename Data>
 List<Data>::Node::Node(Data &&d) noexcept { std::swap(val, d); }
 
-
-/* ******************************* Copy constructor ******************************* */
+// Copy constructor
 template <typename Data>
 List<Data>::Node::Node(const Node &other) : val(other.val) {}
 
-
-/* ******************************* Move constructor ******************************* */
+// Move constructor
 template <typename Data>
 List<Data>::Node::Node(Node &&other) noexcept {
     std::swap(other.val, val);
     std::swap(other.next, next);
 }
 
-
-/* ******************************* Destructor ******************************* */
+// Destructor
 template <typename Data> List<Data>::Node::~Node() {}
 
-
-/* ******************************* Comparison operators ******************************* */
+// Comparison operators
 template <typename Data>
 inline bool List<Data>::Node::operator==(const Node &other) const noexcept {
     return (val == other.val);
@@ -40,11 +38,10 @@ inline bool List<Data>::Node::operator!=(const Node &other) const noexcept {
 }
 
 /* ************************************************************************** */
+/* LIST - CONSTRUCTORS                                                         */
+/* ************************************************************************** */
 
-// Constructors
-
-
-/* ******************************* Copy constructor from TraversableContainer ******************************* */
+// Copy constructor from TraversableContainer
 template <typename Data>
 List<Data>::List(const TraversableContainer<Data> &con) {
     con.Traverse([this](const Data &d) {
@@ -52,8 +49,7 @@ List<Data>::List(const TraversableContainer<Data> &con) {
     });
 }
 
-
-/* ******************************* Move constructor from MappableContainer ******************************* */
+// Move constructor from MappableContainer
 template <typename Data>
 List<Data>::List(MappableContainer<Data> &&con) {
     con.Map([this](Data &d) {
@@ -61,8 +57,7 @@ List<Data>::List(MappableContainer<Data> &&con) {
     });
 }
 
-
-/* ******************************* Copy constructor ******************************* */
+//Copy constructor
 template <typename Data> List<Data>::List(const List<Data> &l) {
   if (!(size = l.size))
     return;
@@ -79,8 +74,7 @@ template <typename Data> List<Data>::List(const List<Data> &l) {
   }
 }
 
-
-/* ******************************* Move constructor ******************************* */
+// Move constructor
 template <typename Data> List<Data>::List(List &&l) {
   std::swap(size, l.size);
   std::swap(head, l.head);
@@ -88,17 +82,19 @@ template <typename Data> List<Data>::List(List &&l) {
 }
 
 /* ************************************************************************** */
+/* LIST - DESTRUCTOR                                                           */
+/* ************************************************************************** */
 
-
-/* ******************************* Destructor ******************************* */
+// Destructor
 template <typename Data> List<Data>::~List() {
     Clear();
 }
 
 /* ************************************************************************** */
+/* LIST - ASSIGNMENT OPERATORS                                                 */
+/* ************************************************************************** */
 
-
-/* ******************************* Copy assignment ******************************* */
+// Copy assignment
 template <typename Data>
 List<Data> &List<Data>::operator=(const List<Data> &l) {
     if (!l.size) {
@@ -124,8 +120,13 @@ List<Data> &List<Data>::operator=(const List<Data> &l) {
     }
 
     if (tail->next) {
-        delete tail->next;
+        Node* temp = tail->next;
         tail->next = nullptr;
+        while (temp) {
+            Node* toDelete = temp;
+            temp = temp->next;
+            delete toDelete;
+        }
     } else
         for (wl = wl->next; wl; wl = wl->next) {
             InsertAtBack(wl->val);
@@ -134,8 +135,7 @@ List<Data> &List<Data>::operator=(const List<Data> &l) {
     return *this;
 }
 
-
-/* ******************************* Move assignment ******************************* */
+// Move assignment
 template <typename Data>
 List<Data> &List<Data>::operator=(List<Data> &&l) noexcept {
     std::swap(size, l.size);
@@ -145,9 +145,9 @@ List<Data> &List<Data>::operator=(List<Data> &&l) noexcept {
 }
 
 /* ************************************************************************** */
+/* LIST - COMPARISON OPERATORS                                                 */
+/* ************************************************************************** */
 
-
-/* ******************************* Comparison operators ******************************* */
 template <typename Data>
 inline bool List<Data>::operator==(const List<Data> &l) const noexcept {
     if (size != l.size)
@@ -169,8 +169,10 @@ inline bool List<Data>::operator!=(const List<Data> &l) const noexcept {
     return !(*this == l);
 }
 
+/* ************************************************************************** */
+/* LIST - SPECIFIC MEMBER FUNCTIONS                                            */
+/* ************************************************************************** */
 
-/* ******************************* Specific member functions ******************************* */
 template <typename Data>
 void List<Data>::InsertAtFront(const Data &data) {
     Node* newNode = new Node(data);
@@ -255,9 +257,9 @@ void List<Data>::InsertAtBack(Data &&data) {
 }
 
 /* ************************************************************************** */
+/* LIST - MUTABLE LINEAR CONTAINER FUNCTIONS                                   */
+/* ************************************************************************** */
 
-
-/* ******************************* Specific member functions (inherited from MutableLinearContainer) ******************************* */
 template <typename Data>
 Data &List<Data>::operator[](const unsigned long index) {
     if (index >= size)
@@ -284,6 +286,8 @@ Data &List<Data>::Back() {
     return tail->val;
 }
 
+/* ************************************************************************** */
+/* LIST - LINEAR CONTAINER FUNCTIONS                                           */
 /* ************************************************************************** */
 
 template <typename Data>
@@ -315,18 +319,18 @@ const Data& List<Data>::Back() const {
 }
 
 /* ************************************************************************** */
+/* LIST - MAPPABLE CONTAINER FUNCTIONS                                         */
+/* ************************************************************************** */
 
-
-/* ******************************* Specific member function (inherited from MappableContainer) ******************************* */
 template <typename Data>
 inline void List<Data>::Map(MapFun fun) {
     PreOrderMap(fun);
 }
 
 /* ************************************************************************** */
+/* LIST - PRE-ORDER MAPPABLE CONTAINER FUNCTIONS                               */
+/* ************************************************************************** */
 
-
-/* ******************************* Specific member function (inherited from PreOrderMappableContainer) ******************************* */
 template <typename Data>
 inline void List<Data>::PreOrderMap(MapFun fun) {
     Node* current = head;
@@ -336,10 +340,18 @@ inline void List<Data>::PreOrderMap(MapFun fun) {
     }
 }
 
+template <typename Data>
+void List<Data>::PreOrderMap(MapFun fun, Node* current) const {
+    if (current != nullptr) {
+        fun(current->val);
+        PreOrderMap(fun, current->next);
+    }
+}
+
+/* ************************************************************************** */
+/* LIST - POST-ORDER MAPPABLE CONTAINER FUNCTIONS                              */
 /* ************************************************************************** */
 
-
-/* ******************************* Specific member function (inherited from PostOrderMappableContainer) ******************************* */
 template <typename Data>
 inline void List<Data>::PostOrderMap(MapFun fun) {
     PostOrderMap(fun, head);
@@ -353,27 +365,19 @@ void List<Data>::PostOrderMap(MapFun fun, Node* current) const {
     }
 }
 
-template <typename Data>
-void List<Data>::PreOrderMap(MapFun fun, Node* current) const {
-    if (current != nullptr) {
-        fun(current->val);
-        PreOrderMap(fun, current->next);
-    }
-}
-
+/* ************************************************************************** */
+/* LIST - TRAVERSABLE CONTAINER FUNCTIONS                                      */
 /* ************************************************************************** */
 
-
-/* ******************************* Specific member function (inherited from TraversableContainer) ******************************* */
 template <typename Data>
 inline void List<Data>::Traverse(TraverseFun fun) const {
     PreOrderTraverse(fun);
 }
 
 /* ************************************************************************** */
+/* LIST - PRE-ORDER TRAVERSABLE CONTAINER FUNCTIONS                            */
+/* ************************************************************************** */
 
-
-/* ******************************* Specific member function (inherited from PreOrderTraversableContainer) ******************************* */
 template <typename Data>
 inline void List<Data>::PreOrderTraverse(TraverseFun fun) const {
     PreOrderTraverse(fun, head);
@@ -388,9 +392,9 @@ void List<Data>::PreOrderTraverse(TraverseFun fun, Node* current) const {
 }
 
 /* ************************************************************************** */
+/* LIST - POST-ORDER TRAVERSABLE CONTAINER FUNCTIONS                           */
+/* ************************************************************************** */
 
-
-/* ******************************* Specific member function (inherited from PostOrderTraversableContainer) ******************************* */
 template <typename Data>
 inline void List<Data>::PostOrderTraverse(TraverseFun fun) const {
     PostOrderTraverse(fun, head);
@@ -405,9 +409,9 @@ void List<Data>::PostOrderTraverse(TraverseFun fun, Node* current) const {
 }
 
 /* ************************************************************************** */
+/* LIST - CLEARABLE CONTAINER FUNCTIONS                                        */
+/* ************************************************************************** */
 
-
-/* ******************************* Specific member function (inherited from ClearableContainer) ******************************* */
 template <typename Data>
 inline void List<Data>::Clear() {
     while (head != nullptr) {

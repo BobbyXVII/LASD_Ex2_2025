@@ -14,7 +14,7 @@ namespace lasd {
 
 template <typename Data>
 class HeapVec : virtual public Heap<Data>,
-                public Vector<Data> {
+                public SortableVector<Data> {
 
 private:
 
@@ -22,8 +22,8 @@ private:
 
 protected:
 
-  using Vector<Data>::size;
-  using Vector<Data>::elements;
+  using SortableVector<Data>::size;
+  using SortableVector<Data>::elements;
 
 public:
 
