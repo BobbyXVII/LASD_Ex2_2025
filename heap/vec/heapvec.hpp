@@ -5,6 +5,7 @@
 
 #include "../heap.hpp"
 #include "../../vector/vector.hpp"
+#include <stdexcept>
 
 /* ************************************************************************** */
 
@@ -72,7 +73,7 @@ public:
   // Specific member functions (inherited from Heap)
 
   // Override Heap member
-  bool IsHeap() const noexcept override; // (must throw std::length_error when empty)
+  bool IsHeap() const override; // (must throw std::length_error when empty)
 
   // Override Heap member
   void Heapify() override;

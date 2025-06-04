@@ -2,6 +2,7 @@
 #define VECTOR_HPP
 
 #include "../container/linear.hpp"
+#include <stdexcept>
 
 /* ************************************************************************** */
 

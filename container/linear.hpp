@@ -8,6 +8,7 @@
 #include <climits>
 #include <random>
 #include <utility>
+#include <stdexcept>
 
 /* ************************************************************************** */
 

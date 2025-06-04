@@ -122,24 +122,38 @@ bool HeapVec<Data>::operator!=(const HeapVec& other) const noexcept {
 }
 
 template <typename Data>
-bool HeapVec<Data>::IsHeap() const noexcept {
-  for (ulong index = 0; index < this->size / 2; ++index) {
-    if (HasLeftChild(index) && this->elements[index] < this->elements[LeftChild(index)]) {
-      return false;
+bool HeapVec<Data>::IsHeap() const {
+    if (this->size == 0) {
+        throw std::length_error("Heap is empty");
     }
-    if (HasRightChild(index) && this->elements[index] < this->elements[RightChild(index)]) {
-      return false;
+    
+    // Controlla la proprietà heap per ogni nodo non foglia
+    for (ulong i = 0; i < this->size / 2; ++i) {
+        ulong leftChild = 2 * i + 1;
+        ulong rightChild = 2 * i + 2;
+        
+        // Controlla figlio sinistro
+        if (leftChild < this->size && this->elements[i] < this->elements[leftChild]) {
+            return false;
+        }
+        
+        // Controlla figlio destro (se esiste)
+        if (rightChild < this->size && this->elements[i] < this->elements[rightChild]) {
+            return false;
+        }
     }
-  }
-  return true;
+    
+    return true;
 }
 
 template <typename Data>
 void HeapVec<Data>::Heapify() {
-  if (this->size == 0) {
-    throw std::length_error("Heap is empty");
-  }
-  BuildHeap();
+    if (size == 0) {
+        throw std::length_error("Heap is empty");
+    }
+    
+    // Heapify dovrebbe ricostruire l'heap, non solo controllarlo
+    BuildHeap();
 }
 
 template <typename Data>

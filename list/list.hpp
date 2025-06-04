@@ -6,6 +6,7 @@
 
 #include "../container/linear.hpp"
 #include "../container/mappable.hpp"
+#include <stdexcept>
 
 /* ************************************************************************** */
 
