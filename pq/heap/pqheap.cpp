@@ -51,62 +51,72 @@ PQHeap<Data>& PQHeap<Data>::operator=(PQHeap<Data>&& other) noexcept {
 
 template <typename Data>
 const Data& PQHeap<Data>::Tip() const {
-  return HeapVec<Data>::Top(); // Delega al metodo Top() di HeapVec
+  return HeapVec<Data>::Top();
 }
 
 template <typename Data>
 void PQHeap<Data>::RemoveTip() {
-  if (this->Empty()) {
-    throw std::length_error("RemoveTip: Priority queue is empty");
-  }
-  
-  // Sposta l'ultimo elemento alla radice e rimuovi l'ultimo
-  this->elements[0] = std::move(this->elements[this->size - 1]);
-  this->Resize(this->size - 1);
-  
-  // Ripristina la proprietà dell'heap se non è vuoto
-  if (!this->Empty()) {
-    this->HeapifyDown(0);
-  }
+  HeapVec<Data>::TopNRemove();
 }
 
 template <typename Data>
 Data PQHeap<Data>::TipNRemove() {
-  return HeapVec<Data>::TopNRemove(); // Delega al metodo TopNRemove() di HeapVec
+  return HeapVec<Data>::TopNRemove();
 }
 
 template <typename Data>
 void PQHeap<Data>::Insert(const Data& value) {
-  HeapVec<Data>::Insert(value); // Delega al metodo Insert() di HeapVec
+  HeapVec<Data>::Insert(value);
 }
 
 template <typename Data>
 void PQHeap<Data>::Insert(Data&& value) {
-  HeapVec<Data>::Insert(std::move(value)); // Delega al metodo Insert() di HeapVec
+  HeapVec<Data>::Insert(std::move(value));
+}
+
+template <typename Data>
+void PQHeap<Data>::Clear() {
+  HeapVec<Data>::Clear();
 }
 
 template <typename Data>
 void PQHeap<Data>::Change(ulong index, const Data& value) {
   if (index >= this->size) {
-    throw std::out_of_range("Change: Index out of range");
+    throw std::out_of_range("Index out of range");
   }
   
+  Data oldValue = this->elements[index];
   this->elements[index] = value;
   
-  // Ripristina la proprietà dell'heap
-  this->Heapify();
+  // Se il nuovo valore è maggiore del precedente, heapify up
+  if (value > oldValue) {
+    this->HeapifyUp(index);
+  }
+  // Se il nuovo valore è minore del precedente, heapify down
+  else if (value < oldValue) {
+    this->HeapifyDown(index);
+  }
+  // Se sono uguali, non serve fare nulla
 }
 
 template <typename Data>
 void PQHeap<Data>::Change(ulong index, Data&& value) {
   if (index >= this->size) {
-    throw std::out_of_range("Change: Index out of range");
+    throw std::out_of_range("Index out of range");
   }
   
+  Data oldValue = this->elements[index];
   this->elements[index] = std::move(value);
   
-  // Ripristina la proprietà dell'heap
-  this->Heapify();
+  // Se il nuovo valore è maggiore del precedente, heapify up
+  if (this->elements[index] > oldValue) {
+    this->HeapifyUp(index);
+  }
+  // Se il nuovo valore è minore del precedente, heapify down
+  else if (this->elements[index] < oldValue) {
+    this->HeapifyDown(index);
+  }
+  // Se sono uguali, non serve fare nulla
 }
 
 /* ************************************************************************** */

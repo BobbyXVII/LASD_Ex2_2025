@@ -80,12 +80,17 @@ public:
   /* ************************************************************************ */
 
   // Specific member function (inherited from SortableLinearContainer)
-  void Sort() override; // Override SortableLinearContainer member
+  void Sort() noexcept override;
 
   /* ************************************************************************ */
 
   void Clear() override; // Override ClearableContainer member
   
+  // Heap-specific operations
+  const Data& Top() const; // Get the top element (max element)
+  Data TopNRemove(); // Remove and return the top element
+  void Insert(const Data& value); // Insert an element
+  void Insert(Data&& value); // Insert an element (move version)
 
 protected:
   void Swap(ulong, ulong); // Swap elements at two indices

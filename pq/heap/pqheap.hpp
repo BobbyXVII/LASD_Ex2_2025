@@ -1,4 +1,3 @@
-
 #ifndef PQHEAP_HPP
 #define PQHEAP_HPP
 
@@ -78,12 +77,9 @@ public:
 
   void Clear() override;
 
-  void HeapifyUp(ulong index);
-
-
-
 protected:
-
+  // Aggiungi qui se necessario, ma HeapVec già lo ha
+  // using HeapVec<Data>::HeapifyUp;
 };
 
 /* ************************************************************************** */

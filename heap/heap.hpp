@@ -37,7 +37,7 @@ public:
   // Specific member functions
 
   // type IsHeap(argument) specifiers;
-  virtual bool IsHeap() const noexcept = 0; // (must throw std::length_error when empty)
+  virtual bool IsHeap() const = 0; // (must throw std::length_error when empty)
 
   // type Heapify(argument) specifiers;
   virtual void Heapify() = 0; // (must throw std::length_error when empty)

@@ -10,7 +10,7 @@ void HeapVec<Data>::BuildHeap() {
 }
 
 template <typename Data>
-void heapVec<Data>::HeapifyUp(ulong index) {
+void HeapVec<Data>::HeapifyUp(ulong index) {
   while (HasParent(index) && this->elements[index] > this->elements[Parent(index)]) {
     Swap(index, Parent(index));
     index = Parent(index);
@@ -143,9 +143,9 @@ void HeapVec<Data>::Heapify() {
 }
 
 template <typename Data>
-void HeapVec<Data>::Sort() {
+void HeapVec<Data>::Sort() noexcept {
   if (this->size == 0) {
-    throw std::length_error("Heap is empty");
+    return; // Change from throw to early return for noexcept compatibility
   }
 
   ulong originalSize = this->size;
@@ -162,6 +162,45 @@ void HeapVec<Data>::Sort() {
 template <typename Data>
 void HeapVec<Data>::Clear() {
   Vector<Data>::Clear();
+}
+
+template <typename Data>
+const Data& HeapVec<Data>::Top() const {
+  if (this->size == 0) {
+    throw std::length_error("Heap is empty");
+  }
+  return this->elements[0]; // Root element is always at index 0
+}
+
+template <typename Data>
+Data HeapVec<Data>::TopNRemove() {
+  if (this->size == 0) {
+    throw std::length_error("Heap is empty");
+  }
+  
+  Data top = this->elements[0];
+  this->elements[0] = this->elements[this->size - 1];
+  this->size--;
+  
+  if (this->size > 0) {
+    HeapifyDown(0);
+  }
+  
+  return top;
+}
+
+template <typename Data>
+void HeapVec<Data>::Insert(const Data& value) {
+  Vector<Data>::Resize(this->size + 1);
+  this->elements[this->size - 1] = value;
+  HeapifyUp(this->size - 1);
+}
+
+template <typename Data>
+void HeapVec<Data>::Insert(Data&& value) {
+  Vector<Data>::Resize(this->size + 1);
+  this->elements[this->size - 1] = std::move(value);
+  HeapifyUp(this->size - 1);
 }
 
 /* ************************************************************************** */
